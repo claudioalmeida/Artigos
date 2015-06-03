@@ -1,0 +1,31 @@
+\tikzstyle{decision} = [diamond, draw, thick, shape aspect=2,
+    text width=4.5em, text badly centered, node distance=1.5cm, inner sep=0pt]
+\tikzstyle{block} = [rectangle,draw, thick, 
+    text width=5em, text centered, rounded corners, minimum height=2em]
+\tikzstyle{block1} = [rectangle, draw, thick, text width=8em, text centered, rounded corners]
+\tikzstyle{line} = [draw, -latex', thick];
+    
+\begin{tikzpicture}[node distance=1.3cm]
+  \node [block] (pop) {Initial Population};
+  \node [decision, below of=pop] (decide) {converge?}; 
+  \node [block, below of=decide,node distance=1.7cm] (predator) {predator};
+  \node [block, below of=predator] (habitat) {habitat};
+  \node [block, below of=habitat] (migrate) {migrate};
+  \node [block, below of=migrate] (crossover) {crossover};
+  \node [block, below of=crossover] (mutation) {mutation};
+
+  \node [block1, right of=predator, node distance=5cm] (clustering) {Classification of solutions into groups};
+
+  \path [line] (pop) -- (decide);
+
+  \draw[-latex',thick] (decide) -| node [near start, above] {\bf yes} (clustering);
+  \draw[-latex',thick] (decide) -- node [right] {\bf no} (predator);  
+ 
+  \path [line] (predator) -- (habitat);
+  \path [line] (habitat) -- (migrate);
+  \path [line] (migrate) -- (crossover);
+  \path [line] (crossover) -- (mutation);
+  \path [line] (mutation.west) -- +(-2cm, 0) |- (decide.west);
+  
+  
+\end{tikzpicture}
