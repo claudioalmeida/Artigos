@@ -1,0 +1,36 @@
+1) Definir mesma semente para gerar numeros aleatorios. (OK)
+
+2) Comparar resultados com Geison. (Colocar mesma semente no do Geison). (OK)
+
+3) Levantamento bibliográfico (www.capes.com.br -> Periodicos -> Web OF Science).
+	- Drug release.
+	- Controlled Release.
+	- Hydrocortisone.
+	- Comparison of methods for predicting dissolution and the theoretical implications of particle-size-dependent solubility
+	- Controlled drug delivery from porous hydroxyapatite grafts: An experimental and theoretical approach.
+	- Release of hydrocortison from a cream matrix: dependency of release.
+	- Modeling of diffusion controlled drug delivery. (Journal of Controlled Release).
+	- modelling and hydrocortisone and diffusion coefficient.
+	- Neural
+
+4) Artigo
+	- Introdução
+		* 1,5 página
+		* Visão Geral do Problema
+		* O que estão fazendo nesse problema.
+		* Qual a proposta.
+
+	- Metodologia.
+		* Como será desenvolvido.
+
+	- Resultados e Discussões.
+		* Como a metodologia foi desenvolvida.
+		* Como foi testada.
+		* Aplicação em um problema da literatura e comparação com a literatura.
+		* Abrangência para outras aplicações.
+		* Relacionar com introdução.
+		* Referência.
+
+5) Definir revista.
+
+6) Parte Gráfica Prolog.
