@@ -1,0 +1,7 @@
+1) Procurar AG na literatura (benchmark).
+	- Multidimensional.
+	- Algoritmo de Grover.
+	- Problema atômico.
+
+2) Comparar desempenhos.
+
