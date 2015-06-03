@@ -1,0 +1,20 @@
+An Alternative Approach Based on Artificial Neural Networks to Study Controlled Drug Release
+============================================================================================
+1) Diferença, na prática, entre matriz biodegradável (hidrocortisona) e matriz biocerâmica (ródio)?
+
+2) Porque é considerado apenas a altura da cápsula (h)? (Em alguns pontos aparece o raio (a) e a largura (l)
+
+3) Porque o segundo exemplo foi avaliado apenas para período > 120 dias? Quais os resultados para períodos menores?
+
+
+
+
+Um Algoritmo Fuzzy-Genético Adaptativo para a estimativa da matriz de propriedades fisico-químicas para alcançar perfis desejados de liberação de fármacos 
+==========================================================================================================================================================
+1) Porque o gráfico de difusão de fármaco é no sentido inverso do eixo detempo t? (Explicação geral sobre o gráfico)
+
+2) Explicação geral sobre os gráficos multidimensionais de parâmetros (D, C, L).
+
+3) Porque as respostas são exibidas em termos de D, A, Cs, H?
+
+4) Quais foram os impactos de Alteração matriz polimérica (2, 17, 18) e Matrizes diferentes (3,4,5)?
