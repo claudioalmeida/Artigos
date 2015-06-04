@@ -1,0 +1,113 @@
+#
+# $Id$
+#
+# set dpi 102
+
+reset
+title = "higuchi_sketch"
+
+set terminal eps mono
+set output "%s.eps"%(title)
+gold_ratio = 1/((1+sqrt(5))/2)
+set width 10.0
+
+set nogrid
+set multiplot
+set preamble \usepackage{wasysym}
+
+set texthalign right
+set textvalign centre
+
+set nodisplay
+set notitle
+
+
+#-----------------------------------------------------------------
+#                  define the plot basics
+#-----------------------------------------------------------------
+set xrange [-2:8]
+set yrange [0:10]
+set nokey
+Lx = 6
+Ly = 7
+dx = Lx/6
+dy = Ly/7
+# set axes with arrows
+set arrow 100 from -2, 0 to 10,  0
+set arrow 200 from  0, 0 to  0, 10
+#-----------------------------------------------------------------
+
+
+
+#-----------------------------------------------------------------
+#                    label the y axis
+#-----------------------------------------------------------------
+set label 101 '$\mathrm{C}(\mathrm{t})$' -0.3, 9.5
+#-----------------------------------------------------------------
+
+
+
+#-----------------------------------------------------------------
+#            draw dotted lines to define the regions
+#-----------------------------------------------------------------
+# moving boundary
+set arrow 10 from Lx/3, 0 to Lx/3, Ly-dy with nohead linetype 2 
+# half-thickness of matrix
+set arrow 11 from   Lx, 0 to   Lx, Ly-dy with nohead linetype 2 
+set arrow 12 from   0, Ly-dy to Lx/3, Ly-dy with nohead linetype 2
+set arrow 13 from   0, Ly/3 to Lx/3, Ly/3 with nohead linetype 2
+#-----------------------------------------------------------------
+
+
+
+#-------------------------------------------------------------------
+#            graph sketch
+#-------------------------------------------------------------------
+set arrow 20 from    0,     0 to Lx/3,  Ly/3 with nohead linewidth 2
+set arrow 21 from Lx/3,  Ly/3 to Lx/3, Ly-dy with nohead linewidth 2
+set arrow 22 from Lx/3, Ly-dy to Lx  , Ly-dy with nohead linewidth 2
+#-------------------------------------------------------------------
+
+
+
+#-------------------------------------------------------------------
+#            signaling the separate areas of plot
+#-------------------------------------------------------------------
+# external medium hatched area
+#-- set label 30 '\ding{192}' -1, Ly/2
+set label 30 'I' -1, 3*Ly/4
+#
+# depletion zone#
+#-- set label 31 '\ding{193}' Lx/6, Ly
+set label 31 'II' Lx/6, 3*Ly/4
+# undissolved drug
+#-- set label 32 '\ding{194}' 2*Lx/3, Ly/2
+set label 32 'III' 2*Lx/3, 3*Ly/4
+#
+# sign of diffusion
+#set label 35 '$\leftsquigarrow$' 0,   Ly/2
+#-------------------------------------------------------------------
+
+
+
+#-------------------------------------------------------------------
+#                          specific labels
+#-------------------------------------------------------------------
+# bottom labels
+set xtics border ( "$\mathrm{x}_\mathrm{b}(\mathrm{t})\longrightarrow$" \
+     Lx/3, "$\frac{\mathrm{L}}{2}$" Lx )
+set mxtics border ()
+#
+# left labels
+set label 37 '$\mathrm{C}_\mathrm{s}$\,' 0, Ly/3
+set label 38 '$\mathrm{C}_0$\,'          0, Ly-dy
+#set label 39 '$\leftsquigarrow$\,drug diffusion' 1.4*Lx,   1.2*Ly
+#-------------------------------------------------------------------
+
+plot 
+set display 
+refresh
+
+set term pdf
+set output "%s.pdf"%(title)
+refresh
