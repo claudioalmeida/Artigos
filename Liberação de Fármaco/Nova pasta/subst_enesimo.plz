@@ -1,0 +1,17 @@
+/* substitui_enesimo(+Posição,+Lista,+Elemento,-ListaComElemento) é verdade se o
+   argumento da Lista na posição Posição (inicia de 1) da Lista for substituído
+   por Elemento resultando na nva lista ListaComElemento. Determinístico.
+*/
+substitui_enesimo(Posicao,Lista,Elemento,ListaComElemento):-
+	subst_enesimo(1,Posicao,Lista,Elemento,ListaComElemento).
+
+/* subst_enesimo(+Contador,+Posição,+Lista,+Elemento,-ListaComElemento)
+   implementa substitui_enesimo/4, usando Contador para contar a posição dos
+   elementos na lista. Contador deve ser iniciado com 1. Determinístico.
+*/
+subst_enesimo(Posicao,Posicao,[_|Lista],Elemento,[Elemento|Lista]):-!.
+subst_enesimo(Contador,Posicao,[A|Lista],Elemento,[A|ListaComElemento]):-
+	NContador is Contador+1,
+	subst_enesimo(NContador,Posicao,Lista,Elemento,ListaComElemento).
+
+teste(Posicao,R):- substitui_enesimo(Posicao,[a,a,a,b,c,a,a,b,c],z,R).

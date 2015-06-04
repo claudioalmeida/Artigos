@@ -1,0 +1,1 @@
+:- nb_setval(referenciafuncaoliberacaofarmaco,58371.76614539675).

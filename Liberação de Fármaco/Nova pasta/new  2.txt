@@ -1,0 +1,5 @@
+﻿- Troca Enesimo (Duas Listas) (OK)
+
+- Implementar Módulos (OK)
+
+- Key-Value (Decimais) 

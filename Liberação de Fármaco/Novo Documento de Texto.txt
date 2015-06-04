@@ -1,0 +1,2 @@
+Minimização de pesos e bias
+	- A* e outras técnicas
