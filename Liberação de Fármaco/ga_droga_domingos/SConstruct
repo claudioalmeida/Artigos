@@ -1,0 +1,124 @@
+#
+# $Id$
+#
+import os, os.path, sys
+import string, subprocess
+sys.path.append('./tools')
+import SCons
+from mydate import Date
+import getgitversion
+
+
+def LaTeXDiff(target=None, source=None, env=None):
+    """
+    Get LaTeX diffs of 'file' (actual copy with its youngest repository version)
+    """
+    print 'SOURCES :', source
+    print 'TARGET :', target
+    
+    do_rev = env['DOREV'] 
+    if do_rev:
+        #
+        # The command below seems not to work with me :-(
+        # svn diff -r [REV] $SOURCEFILE | patch -R -p0 -o $TARGET
+        # What follows is more secure but involved :-(
+        #
+        repo_dir = env['REPODIR'] 
+        #
+        #--------------- Get version ---------------
+        print 'DDCR: git_version'
+        #
+        #--------------- retrieve file from SVN and do latexdiff ---------------
+    return None
+
+tar_date    = Date(".").local('America/Sao_Paulo').pretty('%02d%b%y_%H-%M-%S')
+svn_date    = Date(".").local('America/Sao_Paulo').pretty('%a-%d-%b-%Y')
+git_version = getgitversion.getGitVersion()
+
+TEXDIR    = os.getcwd()
+BASEFILE  = 'drug_release'
+TEXSRC    = BASEFILE + '.tex'
+TEXDVI    = BASEFILE + '.dvi'
+TEXPDF    = BASEFILE + '.pdf'
+TEXPS     = BASEFILE + '.ps'
+BIBSOURCE = BASEFILE + '.bib'
+
+CLEAN_EXTENSIONS = [ '.aux ', '.log ', '.nav ', '.out ',
+                     '.snm ', '.toc ', '.vrb ', '.dvi ',
+                     '.bbl ', '.blg ',
+                     '.lof','.lot','.ps','.pdf'
+                     ]
+#
+#-------------------- Command-Line Options ----------------------
+#
+vars = Variables('custom.py')
+vars.Add(('GIT_VERSION', '', git_version))
+vars.AddVariables(
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    BoolVariable('LATEX_DIFF',
+                 'Perform latex diff ?', 0),
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    )
+#
+#---------------------Environment---------------------
+base = Environment( variables = vars,
+                    ENV       = os.environ,
+                    toolpath  = ['#tools'],
+                    )
+
+unknown = vars.UnknownVariables()
+if unknown:
+    print "Unknown variable: ", unknown.keys()
+    Exit(1)
+
+Help('\n--------------------------------------------------------------------------\n')
+Help('Options:')
+Help(vars.GenerateHelpText(base))
+Help('\n--------------------------------------------------------------------------\n')
+
+#------------------------packing tool----------------------------------------------
+base.Tool('disttar_builder', toolpath=['#tools'])
+tarfile = os.path.join('./', 'fuzzy_ga-%s.tar.gz' % tar_date)
+                       
+base.Append(DISTTAR_EXCLUDEEXTS=['.x','.o','.a','.so','.tar.gz','.tgz','.tar.bz2',
+                                 '.pdf','.ps''.pyc'],
+            DISTTAR_EXCLUDEDIRS=['.svn','.git','.gle','auto','build','dist','docs'])
+Alias('dist', base.DistTar(target=tarfile,source=[ Dir('.') ]))
+base['DISTTAR_FORMAT']='gz'
+#------------------------packing tool----------------------------------------------
+
+
+#-------------------- Using PDFLaTeX --------------------
+base['DVIPS'] = 'dvips -t a4'
+pdfOutput = base.PDF(source = os.path.join(TEXDIR, TEXSRC),
+                     target = os.path.join(TEXDIR, TEXPDF)
+                     )
+Depends( pdfOutput,
+         Split(TEXSRC + ' ' + BIBSOURCE)
+         )
+#
+#-------------------- Using LaTeX --------------------
+PSOutput = base.PostScript(source = os.path.join(TEXDIR, TEXSRC),
+                           target = os.path.join(TEXDIR, TEXPS)
+                           )
+Depends( PSOutput,
+         Split(TEXSRC + ' ' + BIBSOURCE) )
+
+base.AddPostAction(PSOutput, \
+                       Action('ps2pdf -dPDFSETTINGS=/screen -dEmbedAllFonts=true ' \
+                                  + TEXPS + ' ' + TEXPDF))
+#
+#-------------------- eps2pdf Builder: --------------------
+pdfBuilder = Builder(action='epstopdf $SOURCE --outfile=$TARGET',
+                     suffix='.pdf',
+                     src_suffix='.eps')
+base.Append(BUILDERS={'Eps2pdf': pdfBuilder})
+
+#
+#-------------------- Customized Clean  --------------------
+for suf in CLEAN_EXTENSIONS:
+    cleanFile = os.path.join(TEXDIR, BASEFILE + suf)
+
+Clean(PSOutput, cleanFile)
+
+Default(PSOutput)
