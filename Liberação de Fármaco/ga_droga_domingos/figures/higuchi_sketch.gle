@@ -1,0 +1,92 @@
+size 24 18
+
+set lwidth 0.05
+
+begin texpreamble
+  \usepackage{amsmath}
+  \usepackage{amssymb}
+end texpreamble
+
+include "graphutil.gle"
+include "shape.gle"
+
+sub zeroaxis style color$
+   gsave
+   tickw = 0.3*0.3+0.1
+   set lstyle style color color$
+   amove xg(xgmin)+tickw yg(0)
+   aline xg(xgmax)-tickw yg(0) arrow end
+   amove xg(0) yg(ygmin)+tickw
+   aline xg(0) yg(ygmax)-tickw arrow end
+   grestore
+end sub
+
+! set graph
+!@graph_select wd hi hsc vsc xmn xmx ymn ymx
+@graph_select 24 18 1 1 -4 14 -2 14
+@zeroaxis 1 black
+! go to origin
+@graph_origin
+
+! ! go to origin
+! amove 2 2
+! aline 20 2 arrow end
+! amove 5 2
+! aline 5 16 arrow end
+
+set lstyle 2
+@graph_vline 8.0 0.0 12.0
+@graph_vline 2.0 0.0 12.0
+
+
+! set lstyle 2
+! ! vertical dashed line 1
+! amove 8 2
+! aline 8 14
+! ! vertical dashed line 2
+! amove 14 2
+! aline 14 8
+
+set lstyle 2
+@graph_hline 3.0 0.0 2.0
+@graph_hline 8.0 0.0 8.0
+
+! ! top horizontal dashed line 
+! rline -9 0
+
+! ! bottom horizontal dashed line 
+! amove 5 5
+! aline 8 5
+
+@graph_origin
+set lstyle 1
+set lwidth 0.09
+@graph_line 0.0 0.0 2.0 3.0
+@graph_vline 2.0 3.0 8.0
+@graph_hline 8.0 2.0 8.0
+
+
+! ! draw full line
+! set lstyle 1
+! set lwidth 0.1
+! amove 5 2
+! aline 8 5
+! rline 0 3
+! rline 6 0
+
+set hei 1.0 font texcmr
+set just cc
+amove xg(2.0) yg(-1.0)
+@line_label xg(1.0) yg(-0.5) xg(3.0) yg(-0.5) "x_{b}(t)" 0.0
+amove xg(3.0) yg(-1.0)
+aline xg(4.0) yg(-1.0) arrow end
+
+!@graph_text 2.0 0.0 "x_{b}(t) \leftsquigarrow" 0.0 -1
+
+
+! ! put labels
+! amove 5 2
+! set font texcmr
+! set hei 1
+! text x_{b}(t)
+
