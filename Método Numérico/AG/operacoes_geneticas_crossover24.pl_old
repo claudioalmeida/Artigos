@@ -1,0 +1,1267 @@
+/* mutacao(+Individuo,-IndividuoMutado) 
+   Realize a mutação em um gene aleatório do indivíduo gerando um indivíduo mutado, onde:
+		+Individuo -> Indivíduo que sofrerá a mutação.
+		-IndividuoMutado -> Indivíduo mutado.
+   Determinístico.
+ */
+mutacao(F-Trajeto/_,FMut-TrajetoMut/X):-
+	nb_getval(nc,Numero_Cidades),
+	Limite_Maximo_Random is Numero_Cidades + 1,
+	random(1,Numero_Cidades,Posicao_Inicial_Mutacao),
+	random(Posicao_Inicial_Mutacao,Limite_Maximo_Random,Posicao_Final_Mutacao),
+	copy_term(Trajeto,TrajetoCopia),
+	pega_ultimo_elemento_lista_incompleta(TrajetoCopia,X),
+	
+	(Posicao_Inicial_Mutacao = Posicao_Final_Mutacao ->
+		FMut = F,
+		TrajetoMut = TrajetoCopia
+	 ;
+		nth1(Posicao_Inicial_Mutacao, Trajeto, Elemento_Posicao_Inicial_Mutacao),
+		nth1(Posicao_Final_Mutacao, Trajeto, Elemento_Posicao_Final_Mutacao),
+		
+		substitui_enesimo(Posicao_Inicial_Mutacao, TrajetoCopia, Elemento_Posicao_Final_Mutacao, Trajeto_Parcial),
+		substitui_enesimo(Posicao_Final_Mutacao, Trajeto_Parcial, Elemento_Posicao_Inicial_Mutacao, TrajetoMut),
+	
+		fitness(TrajetoMut,FMut)
+	).
+		
+
+/* crossover(+PrimeiroIndividuo,+SegundoIndividuo,-PrimeiroIndividuoModificado,-SegundoIndividuoModificado) 
+   Realize o crossover entre dois indivíduos gerando dois novos indivíduos, onde:
+		+PrimeiroIndividuo -> Primeiro indivíduo.
+		+SegundoIndividuo -> Segundo indivíduo.
+		-PrimeiroIndividuo -> Indivíduo com os prefixos e sufixos de PrimeiroIndivíduo e o núcleo de SegundoIndividuo.
+		-SegundoIndividuo -> Indivíduo com os prefixos e sufixos de SegundoIndividuo e o núcleo de PrimeiroIndivíduo.
+   Determinístico.
+*/
+/*crossover(F-Trajeto/_,FCro-TrajetoCro/X):-
+	nb_getval(nc,Numero_Cidades),
+	Limite_Maximo_Random is Numero_Cidades + 1,
+	random(1,Limite_Maximo_Random,Posicao_Inicial_Crossover),
+	random(Posicao_Inicial_Crossover,Limite_Maximo_Random,Posicao_Final_Crossover),
+	copy_term(Trajeto,TrajetoCopia),
+	pega_ultimo_elemento_lista_incompleta(TrajetoCopia,X),
+		
+	(Posicao_Inicial_Crossover = Posicao_Final_Crossover ->
+		FCro = F,
+		TrajetoCro = TrajetoCopia
+	 ;
+		Tamanho_Maximo_Crossover is Limite_Maximo_Random - Posicao_Final_Crossover,
+		random(0,Tamanho_Maximo_Crossover,Tamanho_Crossover),
+		Posicao_Termino_Inicial_Crossover is Posicao_Inicial_Crossover + Tamanho_Crossover,
+		Posicao_Termino_Final_Crossover is Posicao_Final_Crossover + Tamanho_Crossover,
+		Posicao_Posterior_Termino_Inicial is Posicao_Termino_Inicial_Crossover + 1,
+		Posicao_Anterior_Final is Posicao_Final_Crossover - 1,
+	
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,TrajetoCopia/X,Prefixo_Trajeto,Nucleo_Trajeto,_),
+		extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,TrajetoCopia/X,_,Nucleo_Trajeto2,Sufixo_Trajeto2),
+		concatena_diferenca_de_lista(Prefixo_Trajeto,Nucleo_Trajeto2,TrajetoCro_Parcial1),	
+	
+		(Posicao_Posterior_Termino_Inicial < Posicao_Final_Crossover ->
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,TrajetoCopia/X,_,Nucleo,_),
+			concatena_diferenca_de_lista(TrajetoCro_Parcial1,Nucleo,TrajetoCro_Parcial2),
+			concatena_diferenca_de_lista(TrajetoCro_Parcial2,Nucleo_Trajeto,TrajetoCro_Parcial3),
+			concatena_diferenca_de_lista(TrajetoCro_Parcial3,Sufixo_Trajeto2,TrajetoCro/X)
+		 ;
+			(Posicao_Posterior_Termino_Inicial = Posicao_Final_Crossover ->
+				concatena_diferenca_de_lista(TrajetoCro_Parcial1,Nucleo_Trajeto,TrajetoCro_Parcial2)
+			 ;
+				(Posicao_Posterior_Termino_Inicial >= Posicao_Final_Crossover ->
+					extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Anterior_Final,TrajetoCopia/X,_,Nucleo,_),
+					concatena_diferenca_de_lista(TrajetoCro_Parcial1,Nucleo,TrajetoCro_Parcial2)
+				)
+			),
+			concatena_diferenca_de_lista(TrajetoCro_Parcial2,Sufixo_Trajeto2,TrajetoCro/X)
+		),
+		fitness(TrajetoCro,FCro)
+		%Individuos_Crossover = [FCro-TrajetoCro/X]
+	).*/
+	
+crossover(F-Trajeto/X, FCro1-TrajetoCro1/X1,	FCro2-TrajetoCro2/X2,	FCro3-TrajetoCro3/X3,	FCro4-TrajetoCro4/X4,	FCro5-TrajetoCro5/X5,	FCro6-TrajetoCro6/X6,	FCro7-TrajetoCro7/X7,	FCro8-TrajetoCro8/X8,	FCro9-TrajetoCro9/X9,	FCro10-TrajetoCro10/X10,	FCro11-TrajetoCro11/X11,	FCro12-TrajetoCro12/X12,	FCro13-TrajetoCro13/X13,	FCro14-TrajetoCro14/X14,	FCro15-TrajetoCro15/X15,	FCro16-TrajetoCro16/X16,	FCro17-TrajetoCro17/X17,	FCro18-TrajetoCro18/X18,	FCro19-TrajetoCro19/X19,	FCro20-TrajetoCro20/X20,	FCro21-TrajetoCro21/X21,	FCro22-TrajetoCro22/X22,	FCro23-TrajetoCro23/X23,	FCro24-TrajetoCro24/X24):-
+	nb_getval(nc,Numero_Cidades),
+	Limite_Maximo_Random is Numero_Cidades + 1,
+	
+	/*Posicao_Inicial_Crossover = 79,
+	Posicao_Termino_Inicial_Crossover = 80,
+	Posicao_Final_Crossover = 80,
+	Posicao_Termino_Final_Crossover = 81,
+	Posicao_Posterior_Termino_Inicial = 81,
+	Posicao_Anterior_Final = 79,*/
+	
+	random(1,Limite_Maximo_Random,Posicao_Inicial_Crossover),
+	random(Posicao_Inicial_Crossover,Limite_Maximo_Random,Posicao_Final_Crossover),
+	
+	(Posicao_Inicial_Crossover = Posicao_Final_Crossover ->
+		FCro1=F,
+		TrajetoCro1=Trajeto,
+
+		FCro2=F,
+		TrajetoCro2=Trajeto,
+
+		FCro3=F,
+		TrajetoCro3=Trajeto,
+
+		FCro4=F,
+		TrajetoCro4=Trajeto,
+
+		FCro5=F,
+		TrajetoCro5=Trajeto,
+
+		FCro6=F,
+		TrajetoCro6=Trajeto,
+
+		FCro7=F,
+		TrajetoCro7=Trajeto,
+
+		FCro8=F,
+		TrajetoCro8=Trajeto,
+
+		FCro9=F,
+		TrajetoCro9=Trajeto,
+
+		FCro10=F,
+		TrajetoCro10=Trajeto,
+
+		FCro11=F,
+		TrajetoCro11=Trajeto,
+
+		FCro12=F,
+		TrajetoCro12=Trajeto,
+
+		FCro13=F,
+		TrajetoCro13=Trajeto,
+
+		FCro14=F,
+		TrajetoCro14=Trajeto,
+
+		FCro15=F,
+		TrajetoCro15=Trajeto,
+
+		FCro16=F,
+		TrajetoCro16=Trajeto,
+
+		FCro17=F,
+		TrajetoCro17=Trajeto,
+
+		FCro18=F,
+		TrajetoCro18=Trajeto,
+
+		FCro19=F,
+		TrajetoCro19=Trajeto,
+
+		FCro20=F,
+		TrajetoCro20=Trajeto,
+
+		FCro21=F,
+		TrajetoCro21=Trajeto,
+
+		FCro22=F,
+		TrajetoCro22=Trajeto,
+
+		FCro23=F,
+		TrajetoCro23=Trajeto,
+
+		FCro24=F,
+		TrajetoCro24=Trajeto
+	 ;
+		Tamanho_Maximo_Crossover is Limite_Maximo_Random - Posicao_Final_Crossover,
+		random(0,Tamanho_Maximo_Crossover,Tamanho_Crossover),
+		Posicao_Termino_Inicial_Crossover is Posicao_Inicial_Crossover + Tamanho_Crossover,
+		Posicao_Posterior_Termino_Inicial is Posicao_Termino_Inicial_Crossover + 1,
+		Posicao_Anterior_Final is Posicao_Final_Crossover - 1,
+		Posicao_Termino_Final_Crossover is Posicao_Final_Crossover + Tamanho_Crossover,
+		
+		/*nl,
+		write('Coordenadas: '),
+		write(Posicao_Inicial_Crossover),
+		
+		write(' '),
+		write(Posicao_Termino_Inicial_Crossover),
+		
+		write(' '),
+		write(Posicao_Final_Crossover),
+		
+		write(' '),
+		write(Posicao_Termino_Final_Crossover),
+		
+		write(' '),
+		write(Posicao_Posterior_Termino_Inicial),
+		
+		write(' '),
+		write(Posicao_Anterior_Final),
+		nl,*/
+	
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover1,Nucleo_Trajeto_IndividuoCrossover1,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover2,Nucleo_Trajeto_IndividuoCrossover2,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover3,Nucleo_Trajeto_IndividuoCrossover3,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover4,Nucleo_Trajeto_IndividuoCrossover4,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover5,Nucleo_Trajeto_IndividuoCrossover5,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover6,Nucleo_Trajeto_IndividuoCrossover6,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover7,Nucleo_Trajeto_IndividuoCrossover7,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover8,Nucleo_Trajeto_IndividuoCrossover8,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover9,Nucleo_Trajeto_IndividuoCrossover9,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover10,Nucleo_Trajeto_IndividuoCrossover10,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover11,Nucleo_Trajeto_IndividuoCrossover11,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover12,Nucleo_Trajeto_IndividuoCrossover12,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover13,Nucleo_Trajeto_IndividuoCrossover13,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover14,Nucleo_Trajeto_IndividuoCrossover14,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover15,Nucleo_Trajeto_IndividuoCrossover15,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover16,Nucleo_Trajeto_IndividuoCrossover16,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover17,Nucleo_Trajeto_IndividuoCrossover17,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover18,Nucleo_Trajeto_IndividuoCrossover18,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover19,Nucleo_Trajeto_IndividuoCrossover19,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover20,Nucleo_Trajeto_IndividuoCrossover20,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover21,Nucleo_Trajeto_IndividuoCrossover21,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover22,Nucleo_Trajeto_IndividuoCrossover22,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover23,Nucleo_Trajeto_IndividuoCrossover23,_),
+		extrair_sublistas(Posicao_Inicial_Crossover,Posicao_Termino_Inicial_Crossover,Trajeto/X,Prefixo_Trajeto_IndividuoCrossover24,Nucleo_Trajeto_IndividuoCrossover24,_),
+	
+		(Posicao_Posterior_Termino_Inicial < Posicao_Final_Crossover ->
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover1,Sufixo_Trajeto2_IndividuoCrossover1),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover2,Sufixo_Trajeto2_IndividuoCrossover2),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover3,Sufixo_Trajeto2_IndividuoCrossover3),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover4,Sufixo_Trajeto2_IndividuoCrossover4),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover5,Sufixo_Trajeto2_IndividuoCrossover5),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover6,Sufixo_Trajeto2_IndividuoCrossover6),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover7,Sufixo_Trajeto2_IndividuoCrossover7),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover8,Sufixo_Trajeto2_IndividuoCrossover8),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover9,Sufixo_Trajeto2_IndividuoCrossover9),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover10,Sufixo_Trajeto2_IndividuoCrossover10),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover11,Sufixo_Trajeto2_IndividuoCrossover11),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover12,Sufixo_Trajeto2_IndividuoCrossover12),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover13,Sufixo_Trajeto2_IndividuoCrossover13),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover14,Sufixo_Trajeto2_IndividuoCrossover14),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover15,Sufixo_Trajeto2_IndividuoCrossover15),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover16,Sufixo_Trajeto2_IndividuoCrossover16),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover17,Sufixo_Trajeto2_IndividuoCrossover17),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover18,Sufixo_Trajeto2_IndividuoCrossover18),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover19,Sufixo_Trajeto2_IndividuoCrossover19),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover20,Sufixo_Trajeto2_IndividuoCrossover20),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover21,Sufixo_Trajeto2_IndividuoCrossover21),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover22,Sufixo_Trajeto2_IndividuoCrossover22),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover23,Sufixo_Trajeto2_IndividuoCrossover23),
+			extrair_sublistas(Posicao_Final_Crossover,Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover24,Sufixo_Trajeto2_IndividuoCrossover24),		
+			
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover1,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover2,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover3,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover4,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover5,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover6,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover7,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover8,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover9,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover10,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover11,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover12,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover13,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover14,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover15,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover16,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover17,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover18,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover19,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover20,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover21,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover22,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover23,_),
+			extrair_sublistas(Posicao_Posterior_Termino_Inicial,Posicao_Anterior_Final,Trajeto/X,_,Nucleo_IndividuoCrossover24,_)
+
+		 ;
+			(Posicao_Posterior_Termino_Inicial >= Posicao_Final_Crossover ->
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover1,Sufixo_Trajeto2_IndividuoCrossover1),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover2,Sufixo_Trajeto2_IndividuoCrossover2),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover3,Sufixo_Trajeto2_IndividuoCrossover3),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover4,Sufixo_Trajeto2_IndividuoCrossover4),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover5,Sufixo_Trajeto2_IndividuoCrossover5),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover6,Sufixo_Trajeto2_IndividuoCrossover6),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover7,Sufixo_Trajeto2_IndividuoCrossover7),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover8,Sufixo_Trajeto2_IndividuoCrossover8),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover9,Sufixo_Trajeto2_IndividuoCrossover9),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover10,Sufixo_Trajeto2_IndividuoCrossover10),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover11,Sufixo_Trajeto2_IndividuoCrossover11),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover12,Sufixo_Trajeto2_IndividuoCrossover12),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover13,Sufixo_Trajeto2_IndividuoCrossover13),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover14,Sufixo_Trajeto2_IndividuoCrossover14),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover15,Sufixo_Trajeto2_IndividuoCrossover15),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover16,Sufixo_Trajeto2_IndividuoCrossover16),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover17,Sufixo_Trajeto2_IndividuoCrossover17),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover18,Sufixo_Trajeto2_IndividuoCrossover18),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover19,Sufixo_Trajeto2_IndividuoCrossover19),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover20,Sufixo_Trajeto2_IndividuoCrossover20),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover21,Sufixo_Trajeto2_IndividuoCrossover21),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover22,Sufixo_Trajeto2_IndividuoCrossover22),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover23,Sufixo_Trajeto2_IndividuoCrossover23),
+				extrair_sublistas(Posicao_Posterior_Termino_Inicial, Posicao_Termino_Final_Crossover,Trajeto/X,_,Nucleo_Trajeto2_IndividuoCrossover24,Sufixo_Trajeto2_IndividuoCrossover24),
+				
+				Nucleo_IndividuoCrossover1 = Y1/Y1,
+				Nucleo_IndividuoCrossover2 = Y2/Y2,
+				Nucleo_IndividuoCrossover3 = Y3/Y3,
+				Nucleo_IndividuoCrossover4 = Y4/Y4,
+				Nucleo_IndividuoCrossover5 = Y5/Y5,
+				Nucleo_IndividuoCrossover6 = Y6/Y6,
+				Nucleo_IndividuoCrossover7 = Y7/Y7,
+				Nucleo_IndividuoCrossover8 = Y8/Y8,
+				Nucleo_IndividuoCrossover9 = Y9/Y9,
+				Nucleo_IndividuoCrossover10 = Y10/Y10,
+				Nucleo_IndividuoCrossover11 = Y11/Y11,
+				Nucleo_IndividuoCrossover12 = Y12/Y12,
+				Nucleo_IndividuoCrossover13 = Y13/Y13,
+				Nucleo_IndividuoCrossover14 = Y14/Y14,
+				Nucleo_IndividuoCrossover15 = Y15/Y15,
+				Nucleo_IndividuoCrossover16 = Y16/Y16,
+				Nucleo_IndividuoCrossover17 = Y17/Y17,
+				Nucleo_IndividuoCrossover18 = Y18/Y18,
+				Nucleo_IndividuoCrossover19 = Y19/Y19,
+				Nucleo_IndividuoCrossover20 = Y20/Y20,
+				Nucleo_IndividuoCrossover21 = Y21/Y21,
+				Nucleo_IndividuoCrossover22 = Y22/Y22,
+				Nucleo_IndividuoCrossover23 = Y23/Y23,
+				Nucleo_IndividuoCrossover24 = Y24/Y24
+			)
+		),
+		
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover1,Nucleo_Trajeto_IndividuoCrossover1,TrajetoCro1_A),
+		concatena_diferenca_de_lista(TrajetoCro1_A,Nucleo_IndividuoCrossover1,TrajetoCro1_B),
+		concatena_diferenca_de_lista(TrajetoCro1_B,Nucleo_Trajeto2_IndividuoCrossover1,TrajetoCro1_C),
+		concatena_diferenca_de_lista(TrajetoCro1_C,Sufixo_Trajeto2_IndividuoCrossover1,TrajetoCro1/X1),
+		fitness(TrajetoCro1,FCro1),
+				
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover2,Nucleo_Trajeto_IndividuoCrossover2,TrajetoCro2_A),
+		concatena_diferenca_de_lista(TrajetoCro2_A,Nucleo_IndividuoCrossover2,TrajetoCro2_B),
+		concatena_diferenca_de_lista(TrajetoCro2_B,Sufixo_Trajeto2_IndividuoCrossover2,TrajetoCro2_C),
+		concatena_diferenca_de_lista(TrajetoCro2_C,Nucleo_Trajeto2_IndividuoCrossover2,TrajetoCro2/X2),
+		fitness(TrajetoCro2,FCro2),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover3,Nucleo_Trajeto_IndividuoCrossover3,TrajetoCro3_A),
+		concatena_diferenca_de_lista(TrajetoCro3_A,Nucleo_Trajeto2_IndividuoCrossover3,TrajetoCro3_B),
+		concatena_diferenca_de_lista(TrajetoCro3_B,Nucleo_IndividuoCrossover3,TrajetoCro3_C),
+		concatena_diferenca_de_lista(TrajetoCro3_C,Sufixo_Trajeto2_IndividuoCrossover3,TrajetoCro3/X3),
+		fitness(TrajetoCro3,FCro3),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover4,Nucleo_Trajeto_IndividuoCrossover4,TrajetoCro4_A),
+		concatena_diferenca_de_lista(TrajetoCro4_A,Nucleo_Trajeto2_IndividuoCrossover4,TrajetoCro4_B),
+		concatena_diferenca_de_lista(TrajetoCro4_B,Sufixo_Trajeto2_IndividuoCrossover4,TrajetoCro4_C),
+		concatena_diferenca_de_lista(TrajetoCro4_C,Nucleo_IndividuoCrossover4,TrajetoCro4/X4),
+		fitness(TrajetoCro4,FCro4),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover5,Nucleo_Trajeto_IndividuoCrossover5,TrajetoCro5_A),
+		concatena_diferenca_de_lista(TrajetoCro5_A,Sufixo_Trajeto2_IndividuoCrossover5,TrajetoCro5_B),
+		concatena_diferenca_de_lista(TrajetoCro5_B,Nucleo_IndividuoCrossover5,TrajetoCro5_C),
+		concatena_diferenca_de_lista(TrajetoCro5_C,Nucleo_Trajeto2_IndividuoCrossover5,TrajetoCro5/X5),
+		fitness(TrajetoCro5,FCro5),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover6,Nucleo_Trajeto_IndividuoCrossover6,TrajetoCro6_A),
+		concatena_diferenca_de_lista(TrajetoCro6_A,Sufixo_Trajeto2_IndividuoCrossover6,TrajetoCro6_B),
+		concatena_diferenca_de_lista(TrajetoCro6_B,Nucleo_Trajeto2_IndividuoCrossover6,TrajetoCro6_C),
+		concatena_diferenca_de_lista(TrajetoCro6_C,Nucleo_IndividuoCrossover6,TrajetoCro6/X6),
+		fitness(TrajetoCro6,FCro6),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover7,Nucleo_IndividuoCrossover7,TrajetoCro7_A),
+		concatena_diferenca_de_lista(TrajetoCro7_A,Nucleo_Trajeto_IndividuoCrossover7,TrajetoCro7_B),
+		concatena_diferenca_de_lista(TrajetoCro7_B,Sufixo_Trajeto2_IndividuoCrossover7,TrajetoCro7_C),
+		concatena_diferenca_de_lista(TrajetoCro7_C,Nucleo_Trajeto2_IndividuoCrossover7,TrajetoCro7/X7),
+		fitness(TrajetoCro7,FCro7),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover8,Nucleo_IndividuoCrossover8,TrajetoCro8_A),
+		concatena_diferenca_de_lista(TrajetoCro8_A,Nucleo_Trajeto_IndividuoCrossover8,TrajetoCro8_B),
+		concatena_diferenca_de_lista(TrajetoCro8_B,Nucleo_Trajeto2_IndividuoCrossover8,TrajetoCro8_C),
+		concatena_diferenca_de_lista(TrajetoCro8_C,Sufixo_Trajeto2_IndividuoCrossover8,TrajetoCro8/X8),
+		fitness(TrajetoCro8,FCro8),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover9,Nucleo_IndividuoCrossover9,TrajetoCro9_A),
+		concatena_diferenca_de_lista(TrajetoCro9_A,Nucleo_Trajeto2_IndividuoCrossover9,TrajetoCro9_B),
+		concatena_diferenca_de_lista(TrajetoCro9_B,Sufixo_Trajeto2_IndividuoCrossover9,TrajetoCro9_C),
+		concatena_diferenca_de_lista(TrajetoCro9_C,Nucleo_Trajeto_IndividuoCrossover9,TrajetoCro9/X9),
+		fitness(TrajetoCro9,FCro9),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover10,Nucleo_IndividuoCrossover10,TrajetoCro10_A),
+		concatena_diferenca_de_lista(TrajetoCro10_A,Nucleo_Trajeto2_IndividuoCrossover10,TrajetoCro10_B),
+		concatena_diferenca_de_lista(TrajetoCro10_B,Nucleo_Trajeto_IndividuoCrossover10,TrajetoCro10_C),
+		concatena_diferenca_de_lista(TrajetoCro10_C,Sufixo_Trajeto2_IndividuoCrossover10,TrajetoCro10/X10),
+		fitness(TrajetoCro10,FCro10),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover11,Nucleo_IndividuoCrossover11,TrajetoCro11_A),
+		concatena_diferenca_de_lista(TrajetoCro11_A,Sufixo_Trajeto2_IndividuoCrossover11,TrajetoCro11_B),
+		concatena_diferenca_de_lista(TrajetoCro11_B,Nucleo_Trajeto2_IndividuoCrossover11,TrajetoCro11_C),
+		concatena_diferenca_de_lista(TrajetoCro11_C,Nucleo_Trajeto_IndividuoCrossover11,TrajetoCro11/X11),
+		fitness(TrajetoCro11,FCro11),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover12,Nucleo_IndividuoCrossover12,TrajetoCro12_A),
+		concatena_diferenca_de_lista(TrajetoCro12_A,Sufixo_Trajeto2_IndividuoCrossover12,TrajetoCro12_B),
+		concatena_diferenca_de_lista(TrajetoCro12_B,Nucleo_Trajeto_IndividuoCrossover12,TrajetoCro12_C),
+		concatena_diferenca_de_lista(TrajetoCro12_C,Nucleo_Trajeto2_IndividuoCrossover12,TrajetoCro12/X12),
+		fitness(TrajetoCro12,FCro12),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover13,Nucleo_Trajeto2_IndividuoCrossover13,TrajetoCro13_A),
+		concatena_diferenca_de_lista(TrajetoCro13_A,Nucleo_Trajeto_IndividuoCrossover13,TrajetoCro13_B),
+		concatena_diferenca_de_lista(TrajetoCro13_B,Nucleo_IndividuoCrossover13,TrajetoCro13_C),
+		concatena_diferenca_de_lista(TrajetoCro13_C,Sufixo_Trajeto2_IndividuoCrossover13,TrajetoCro13/X13),
+		fitness(TrajetoCro13,FCro13),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover14,Nucleo_Trajeto2_IndividuoCrossover14,TrajetoCro14_A),
+		concatena_diferenca_de_lista(TrajetoCro14_A,Nucleo_Trajeto_IndividuoCrossover14,TrajetoCro14_B),
+		concatena_diferenca_de_lista(TrajetoCro14_B,Sufixo_Trajeto2_IndividuoCrossover14,TrajetoCro14_C),
+		concatena_diferenca_de_lista(TrajetoCro14_C,Nucleo_IndividuoCrossover14,TrajetoCro14/X14),
+		fitness(TrajetoCro14,FCro14),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover15,Nucleo_Trajeto2_IndividuoCrossover15,TrajetoCro15_A),
+		concatena_diferenca_de_lista(TrajetoCro15_A,Nucleo_IndividuoCrossover15,TrajetoCro15_B),
+		concatena_diferenca_de_lista(TrajetoCro15_B,Nucleo_Trajeto_IndividuoCrossover15,TrajetoCro15_C),
+		concatena_diferenca_de_lista(TrajetoCro15_C,Sufixo_Trajeto2_IndividuoCrossover15,TrajetoCro15/X15),
+		fitness(TrajetoCro15,FCro15),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover16,Nucleo_Trajeto2_IndividuoCrossover16,TrajetoCro16_A),
+		concatena_diferenca_de_lista(TrajetoCro16_A,Nucleo_IndividuoCrossover16,TrajetoCro16_B),
+		concatena_diferenca_de_lista(TrajetoCro16_B,Sufixo_Trajeto2_IndividuoCrossover16,TrajetoCro16_C),
+		concatena_diferenca_de_lista(TrajetoCro16_C,Nucleo_Trajeto_IndividuoCrossover16,TrajetoCro16/X16),
+		fitness(TrajetoCro16,FCro16),
+
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover17,Nucleo_Trajeto2_IndividuoCrossover17,TrajetoCro17_A),
+		concatena_diferenca_de_lista(TrajetoCro17_A,Sufixo_Trajeto2_IndividuoCrossover17,TrajetoCro17_B),
+		concatena_diferenca_de_lista(TrajetoCro17_B,Nucleo_Trajeto_IndividuoCrossover17,TrajetoCro17_C),
+		concatena_diferenca_de_lista(TrajetoCro17_C,Nucleo_IndividuoCrossover17,TrajetoCro17/X17),
+		fitness(TrajetoCro17,FCro17),
+
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover18,Nucleo_Trajeto2_IndividuoCrossover18,TrajetoCro18_A),
+		concatena_diferenca_de_lista(TrajetoCro18_A,Sufixo_Trajeto2_IndividuoCrossover18,TrajetoCro18_B),
+		concatena_diferenca_de_lista(TrajetoCro18_B,Nucleo_IndividuoCrossover18,TrajetoCro18_C),
+		concatena_diferenca_de_lista(TrajetoCro18_C,Nucleo_Trajeto_IndividuoCrossover18,TrajetoCro18/X18),
+		fitness(TrajetoCro18,FCro18),
+
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover19,Sufixo_Trajeto2_IndividuoCrossover19,TrajetoCro19_A),
+		concatena_diferenca_de_lista(TrajetoCro19_A,Nucleo_Trajeto_IndividuoCrossover19,TrajetoCro19_B),
+		concatena_diferenca_de_lista(TrajetoCro19_B,Nucleo_Trajeto2_IndividuoCrossover19,TrajetoCro19_C),
+		concatena_diferenca_de_lista(TrajetoCro19_C,Nucleo_IndividuoCrossover19,TrajetoCro19/X19),
+		fitness(TrajetoCro19,FCro19),
+
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover20,Sufixo_Trajeto2_IndividuoCrossover20,TrajetoCro20_A),
+		concatena_diferenca_de_lista(TrajetoCro20_A,Nucleo_Trajeto_IndividuoCrossover20,TrajetoCro20_B),
+		concatena_diferenca_de_lista(TrajetoCro20_B,Nucleo_IndividuoCrossover20,TrajetoCro20_C),
+		concatena_diferenca_de_lista(TrajetoCro20_C,Nucleo_Trajeto2_IndividuoCrossover20,TrajetoCro20/X20),
+		fitness(TrajetoCro20,FCro20),
+
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover21,Sufixo_Trajeto2_IndividuoCrossover21,TrajetoCro21_A),
+		concatena_diferenca_de_lista(TrajetoCro21_A,Nucleo_IndividuoCrossover21,TrajetoCro21_B),
+		concatena_diferenca_de_lista(TrajetoCro21_B,Nucleo_Trajeto2_IndividuoCrossover21,TrajetoCro21_C),
+		concatena_diferenca_de_lista(TrajetoCro21_C,Nucleo_Trajeto_IndividuoCrossover21,TrajetoCro21/X21),
+		fitness(TrajetoCro21,FCro21),
+
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover22,Sufixo_Trajeto2_IndividuoCrossover22,TrajetoCro22_A),
+		concatena_diferenca_de_lista(TrajetoCro22_A,Nucleo_IndividuoCrossover22,TrajetoCro22_B),
+		concatena_diferenca_de_lista(TrajetoCro22_B,Nucleo_Trajeto_IndividuoCrossover22,TrajetoCro22_C),
+		concatena_diferenca_de_lista(TrajetoCro22_C,Nucleo_Trajeto2_IndividuoCrossover22,TrajetoCro22/X22),
+		fitness(TrajetoCro22,FCro22),
+		
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover23,Sufixo_Trajeto2_IndividuoCrossover23,TrajetoCro23_A),
+		concatena_diferenca_de_lista(TrajetoCro23_A,Nucleo_Trajeto2_IndividuoCrossover23,TrajetoCro23_B),
+		concatena_diferenca_de_lista(TrajetoCro23_B,Nucleo_IndividuoCrossover23,TrajetoCro23_C),
+		concatena_diferenca_de_lista(TrajetoCro23_C,Nucleo_Trajeto_IndividuoCrossover23,TrajetoCro23/X23),
+		fitness(TrajetoCro23,FCro23),
+
+		concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover24,Sufixo_Trajeto2_IndividuoCrossover24,TrajetoCro24_A),
+		concatena_diferenca_de_lista(TrajetoCro24_A,Nucleo_Trajeto2_IndividuoCrossover24,TrajetoCro24_B),
+		concatena_diferenca_de_lista(TrajetoCro24_B,Nucleo_Trajeto_IndividuoCrossover24,TrajetoCro24_C),
+		concatena_diferenca_de_lista(TrajetoCro24_C,Nucleo_IndividuoCrossover24,TrajetoCro24/X24),
+		fitness(TrajetoCro24,FCro24)
+
+/*		nl,
+		write(Trajeto),	
+
+nl,
+write(1),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover1),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover1),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover1,Nucleo_Trajeto_IndividuoCrossover1,TrajetoCro1_A),
+nl,
+write(TrajetoCro1_A),
+nl,
+write(Nucleo_IndividuoCrossover1),
+concatena_diferenca_de_lista(TrajetoCro1_A,Nucleo_IndividuoCrossover1,TrajetoCro1_B),
+nl,
+write(TrajetoCro1_B),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover1),
+concatena_diferenca_de_lista(TrajetoCro1_B,Nucleo_Trajeto2_IndividuoCrossover1,TrajetoCro1_C),
+nl,
+write(TrajetoCro1_C),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover1),
+concatena_diferenca_de_lista(TrajetoCro1_C,Sufixo_Trajeto2_IndividuoCrossover1,TrajetoCro1/X1),
+nl,
+write(TrajetoCro1/X1),
+fitness(TrajetoCro1,FCro1),
+
+
+nl,
+write(2),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover2),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover2),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover2,Nucleo_Trajeto_IndividuoCrossover2,TrajetoCro2_A),
+nl,
+write(TrajetoCro2_A),
+nl,
+write(Nucleo_IndividuoCrossover2),
+concatena_diferenca_de_lista(TrajetoCro2_A,Nucleo_IndividuoCrossover2,TrajetoCro2_B),
+nl,
+write(TrajetoCro2_B),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover2),
+concatena_diferenca_de_lista(TrajetoCro2_B,Sufixo_Trajeto2_IndividuoCrossover2,TrajetoCro2_C),
+nl,
+write(TrajetoCro2_C),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover2),
+concatena_diferenca_de_lista(TrajetoCro2_C,Nucleo_Trajeto2_IndividuoCrossover2,TrajetoCro2/X2),
+nl,
+write(TrajetoCro2/X2),
+fitness(TrajetoCro2,FCro2),
+
+
+nl,
+write(3),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover3),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover3),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover3,Nucleo_Trajeto_IndividuoCrossover3,TrajetoCro3_A),
+nl,
+write(TrajetoCro3_A),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover3),
+concatena_diferenca_de_lista(TrajetoCro3_A,Nucleo_Trajeto2_IndividuoCrossover3,TrajetoCro3_B),
+nl,
+write(TrajetoCro3_B),
+nl,
+write(Nucleo_IndividuoCrossover3),
+concatena_diferenca_de_lista(TrajetoCro3_B,Nucleo_IndividuoCrossover3,TrajetoCro3_C),
+nl,
+write(TrajetoCro3_C),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover3),
+concatena_diferenca_de_lista(TrajetoCro3_C,Sufixo_Trajeto2_IndividuoCrossover3,TrajetoCro3/X3),
+nl,
+write(TrajetoCro3/X3),
+fitness(TrajetoCro3,FCro3),
+
+
+nl,
+write(4),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover4),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover4),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover4,Nucleo_Trajeto_IndividuoCrossover4,TrajetoCro4_A),
+nl,
+write(TrajetoCro4_A),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover4),
+concatena_diferenca_de_lista(TrajetoCro4_A,Nucleo_Trajeto2_IndividuoCrossover4,TrajetoCro4_B),
+nl,
+write(TrajetoCro4_B),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover4),
+concatena_diferenca_de_lista(TrajetoCro4_B,Sufixo_Trajeto2_IndividuoCrossover4,TrajetoCro4_C),
+nl,
+write(TrajetoCro4_C),
+nl,
+write(Nucleo_IndividuoCrossover4),
+concatena_diferenca_de_lista(TrajetoCro4_C,Nucleo_IndividuoCrossover4,TrajetoCro4/X4),
+nl,
+write(TrajetoCro4/X4),
+fitness(TrajetoCro4,FCro4),
+
+
+nl,
+write(5),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover5),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover5),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover5,Nucleo_Trajeto_IndividuoCrossover5,TrajetoCro5_A),
+nl,
+write(TrajetoCro5_A),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover5),
+concatena_diferenca_de_lista(TrajetoCro5_A,Sufixo_Trajeto2_IndividuoCrossover5,TrajetoCro5_B),
+nl,
+write(TrajetoCro5_B),
+nl,
+write(Nucleo_IndividuoCrossover5),
+concatena_diferenca_de_lista(TrajetoCro5_B,Nucleo_IndividuoCrossover5,TrajetoCro5_C),
+nl,
+write(TrajetoCro5_C),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover5),
+concatena_diferenca_de_lista(TrajetoCro5_C,Nucleo_Trajeto2_IndividuoCrossover5,TrajetoCro5/X5),
+nl,
+write(TrajetoCro5/X5),
+fitness(TrajetoCro5,FCro5),
+
+
+nl,
+write(6),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover6),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover6),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover6,Nucleo_Trajeto_IndividuoCrossover6,TrajetoCro6_A),
+nl,
+write(TrajetoCro6_A),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover6),
+concatena_diferenca_de_lista(TrajetoCro6_A,Sufixo_Trajeto2_IndividuoCrossover6,TrajetoCro6_B),
+nl,
+write(TrajetoCro6_B),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover6),
+concatena_diferenca_de_lista(TrajetoCro6_B,Nucleo_Trajeto2_IndividuoCrossover6,TrajetoCro6_C),
+nl,
+write(TrajetoCro6_C),
+nl,
+write(Nucleo_IndividuoCrossover6),
+concatena_diferenca_de_lista(TrajetoCro6_C,Nucleo_IndividuoCrossover6,TrajetoCro6/X6),
+nl,
+write(TrajetoCro6/X6),
+fitness(TrajetoCro6,FCro6),
+
+
+nl,
+write(7),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover7),
+nl,
+write(Nucleo_IndividuoCrossover7),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover7,Nucleo_IndividuoCrossover7,TrajetoCro7_A),
+nl,
+write(TrajetoCro7_A),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover7),
+concatena_diferenca_de_lista(TrajetoCro7_A,Nucleo_Trajeto_IndividuoCrossover7,TrajetoCro7_B),
+nl,
+write(TrajetoCro7_B),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover7),
+concatena_diferenca_de_lista(TrajetoCro7_B,Sufixo_Trajeto2_IndividuoCrossover7,TrajetoCro7_C),
+nl,
+write(TrajetoCro7_C),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover7),
+concatena_diferenca_de_lista(TrajetoCro7_C,Nucleo_Trajeto2_IndividuoCrossover7,TrajetoCro7/X7),
+nl,
+write(TrajetoCro7/X7),
+fitness(TrajetoCro7,FCro7),
+
+
+nl,
+write(8),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover8),
+nl,
+write(Nucleo_IndividuoCrossover8),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover8,Nucleo_IndividuoCrossover8,TrajetoCro8_A),
+nl,
+write(TrajetoCro8_A),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover8),
+concatena_diferenca_de_lista(TrajetoCro8_A,Nucleo_Trajeto_IndividuoCrossover8,TrajetoCro8_B),
+nl,
+write(TrajetoCro8_B),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover8),
+concatena_diferenca_de_lista(TrajetoCro8_B,Nucleo_Trajeto2_IndividuoCrossover8,TrajetoCro8_C),
+nl,
+write(TrajetoCro8_C),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover8),
+concatena_diferenca_de_lista(TrajetoCro8_C,Sufixo_Trajeto2_IndividuoCrossover8,TrajetoCro8/X8),
+nl,
+write(TrajetoCro8/X8),
+fitness(TrajetoCro8,FCro8),
+
+
+nl,
+write(9),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover9),
+nl,
+write(Nucleo_IndividuoCrossover9),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover9,Nucleo_IndividuoCrossover9,TrajetoCro9_A),
+nl,
+write(TrajetoCro9_A),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover9),
+concatena_diferenca_de_lista(TrajetoCro9_A,Nucleo_Trajeto2_IndividuoCrossover9,TrajetoCro9_B),
+nl,
+write(TrajetoCro9_B),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover9),
+concatena_diferenca_de_lista(TrajetoCro9_B,Sufixo_Trajeto2_IndividuoCrossover9,TrajetoCro9_C),
+nl,
+write(TrajetoCro9_C),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover9),
+concatena_diferenca_de_lista(TrajetoCro9_C,Nucleo_Trajeto_IndividuoCrossover9,TrajetoCro9/X9),
+nl,
+write(TrajetoCro9/X9),
+fitness(TrajetoCro9,FCro9),
+
+
+nl,
+write(10),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover10),
+nl,
+write(Nucleo_IndividuoCrossover10),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover10,Nucleo_IndividuoCrossover10,TrajetoCro10_A),
+nl,
+write(TrajetoCro10_A),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover10),
+concatena_diferenca_de_lista(TrajetoCro10_A,Nucleo_Trajeto2_IndividuoCrossover10,TrajetoCro10_B),
+nl,
+write(TrajetoCro10_B),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover10),
+concatena_diferenca_de_lista(TrajetoCro10_B,Nucleo_Trajeto_IndividuoCrossover10,TrajetoCro10_C),
+nl,
+write(TrajetoCro10_C),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover10),
+concatena_diferenca_de_lista(TrajetoCro10_C,Sufixo_Trajeto2_IndividuoCrossover10,TrajetoCro10/X10),
+nl,
+write(TrajetoCro10/X10),
+fitness(TrajetoCro10,FCro10),
+
+
+nl,
+write(11),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover11),
+nl,
+write(Nucleo_IndividuoCrossover11),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover11,Nucleo_IndividuoCrossover11,TrajetoCro11_A),
+nl,
+write(TrajetoCro11_A),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover11),
+concatena_diferenca_de_lista(TrajetoCro11_A,Sufixo_Trajeto2_IndividuoCrossover11,TrajetoCro11_B),
+nl,
+write(TrajetoCro11_B),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover11),
+concatena_diferenca_de_lista(TrajetoCro11_B,Nucleo_Trajeto2_IndividuoCrossover11,TrajetoCro11_C),
+nl,
+write(TrajetoCro11_C),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover11),
+concatena_diferenca_de_lista(TrajetoCro11_C,Nucleo_Trajeto_IndividuoCrossover11,TrajetoCro11/X11),
+nl,
+write(TrajetoCro11/X11),
+fitness(TrajetoCro11,FCro11),
+
+
+nl,
+write(12),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover12),
+nl,
+write(Nucleo_IndividuoCrossover12),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover12,Nucleo_IndividuoCrossover12,TrajetoCro12_A),
+nl,
+write(TrajetoCro12_A),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover12),
+concatena_diferenca_de_lista(TrajetoCro12_A,Sufixo_Trajeto2_IndividuoCrossover12,TrajetoCro12_B),
+nl,
+write(TrajetoCro12_B),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover12),
+concatena_diferenca_de_lista(TrajetoCro12_B,Nucleo_Trajeto_IndividuoCrossover12,TrajetoCro12_C),
+nl,
+write(TrajetoCro12_C),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover12),
+concatena_diferenca_de_lista(TrajetoCro12_C,Nucleo_Trajeto2_IndividuoCrossover12,TrajetoCro12/X12),
+nl,
+write(TrajetoCro12/X12),
+fitness(TrajetoCro12,FCro12),
+
+
+nl,
+write(13),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover13),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover13),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover13,Nucleo_Trajeto2_IndividuoCrossover13,TrajetoCro13_A),
+nl,
+write(TrajetoCro13_A),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover13),
+concatena_diferenca_de_lista(TrajetoCro13_A,Nucleo_Trajeto_IndividuoCrossover13,TrajetoCro13_B),
+nl,
+write(TrajetoCro13_B),
+nl,
+write(Nucleo_IndividuoCrossover13),
+concatena_diferenca_de_lista(TrajetoCro13_B,Nucleo_IndividuoCrossover13,TrajetoCro13_C),
+nl,
+write(TrajetoCro13_C),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover13),
+concatena_diferenca_de_lista(TrajetoCro13_C,Sufixo_Trajeto2_IndividuoCrossover13,TrajetoCro13/X13),
+nl,
+write(TrajetoCro13/X13),
+fitness(TrajetoCro13,FCro13),
+
+
+nl,
+write(14),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover14),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover14),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover14,Nucleo_Trajeto2_IndividuoCrossover14,TrajetoCro14_A),
+nl,
+write(TrajetoCro14_A),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover14),
+concatena_diferenca_de_lista(TrajetoCro14_A,Nucleo_Trajeto_IndividuoCrossover14,TrajetoCro14_B),
+nl,
+write(TrajetoCro14_B),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover14),
+concatena_diferenca_de_lista(TrajetoCro14_B,Sufixo_Trajeto2_IndividuoCrossover14,TrajetoCro14_C),
+nl,
+write(TrajetoCro14_C),
+nl,
+write(Nucleo_IndividuoCrossover14),
+concatena_diferenca_de_lista(TrajetoCro14_C,Nucleo_IndividuoCrossover14,TrajetoCro14/X14),
+nl,
+write(TrajetoCro14/X14),
+fitness(TrajetoCro14,FCro14),
+
+
+nl,
+write(15),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover15),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover15),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover15,Nucleo_Trajeto2_IndividuoCrossover15,TrajetoCro15_A),
+nl,
+write(TrajetoCro15_A),
+nl,
+write(Nucleo_IndividuoCrossover15),
+concatena_diferenca_de_lista(TrajetoCro15_A,Nucleo_IndividuoCrossover15,TrajetoCro15_B),
+nl,
+write(TrajetoCro15_B),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover15),
+concatena_diferenca_de_lista(TrajetoCro15_B,Nucleo_Trajeto_IndividuoCrossover15,TrajetoCro15_C),
+nl,
+write(TrajetoCro15_C),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover15),
+concatena_diferenca_de_lista(TrajetoCro15_C,Sufixo_Trajeto2_IndividuoCrossover15,TrajetoCro15/X15),
+nl,
+write(TrajetoCro15/X15),
+fitness(TrajetoCro15,FCro15),
+
+
+nl,
+write(16),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover16),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover16),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover16,Nucleo_Trajeto2_IndividuoCrossover16,TrajetoCro16_A),
+nl,
+write(TrajetoCro16_A),
+nl,
+write(Nucleo_IndividuoCrossover16),
+concatena_diferenca_de_lista(TrajetoCro16_A,Nucleo_IndividuoCrossover16,TrajetoCro16_B),
+nl,
+write(TrajetoCro16_B),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover16),
+concatena_diferenca_de_lista(TrajetoCro16_B,Sufixo_Trajeto2_IndividuoCrossover16,TrajetoCro16_C),
+nl,
+write(TrajetoCro16_C),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover16),
+concatena_diferenca_de_lista(TrajetoCro16_C,Nucleo_Trajeto_IndividuoCrossover16,TrajetoCro16/X16),
+nl,
+write(TrajetoCro16/X16),
+fitness(TrajetoCro16,FCro16),
+
+
+nl,
+write(17),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover17),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover17),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover17,Nucleo_Trajeto2_IndividuoCrossover17,TrajetoCro17_A),
+nl,
+write(TrajetoCro17_A),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover17),
+concatena_diferenca_de_lista(TrajetoCro17_A,Sufixo_Trajeto2_IndividuoCrossover17,TrajetoCro17_B),
+nl,
+write(TrajetoCro17_B),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover17),
+concatena_diferenca_de_lista(TrajetoCro17_B,Nucleo_Trajeto_IndividuoCrossover17,TrajetoCro17_C),
+nl,
+write(TrajetoCro17_C),
+nl,
+write(Nucleo_IndividuoCrossover17),
+concatena_diferenca_de_lista(TrajetoCro17_C,Nucleo_IndividuoCrossover17,TrajetoCro17/X17),
+nl,
+write(TrajetoCro17/X17),
+fitness(TrajetoCro17,FCro17),
+
+
+nl,
+write(18),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover18),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover18),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover18,Nucleo_Trajeto2_IndividuoCrossover18,TrajetoCro18_A),
+nl,
+write(TrajetoCro18_A),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover18),
+concatena_diferenca_de_lista(TrajetoCro18_A,Sufixo_Trajeto2_IndividuoCrossover18,TrajetoCro18_B),
+nl,
+write(TrajetoCro18_B),
+nl,
+write(Nucleo_IndividuoCrossover18),
+concatena_diferenca_de_lista(TrajetoCro18_B,Nucleo_IndividuoCrossover18,TrajetoCro18_C),
+nl,
+write(TrajetoCro18_C),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover18),
+concatena_diferenca_de_lista(TrajetoCro18_C,Nucleo_Trajeto_IndividuoCrossover18,TrajetoCro18/X18),
+nl,
+write(TrajetoCro18/X18),
+fitness(TrajetoCro18,FCro18),
+
+
+nl,
+write(19),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover19),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover19),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover19,Sufixo_Trajeto2_IndividuoCrossover19,TrajetoCro19_A),
+nl,
+write(TrajetoCro19_A),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover19),
+concatena_diferenca_de_lista(TrajetoCro19_A,Nucleo_Trajeto_IndividuoCrossover19,TrajetoCro19_B),
+nl,
+write(TrajetoCro19_B),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover19),
+concatena_diferenca_de_lista(TrajetoCro19_B,Nucleo_Trajeto2_IndividuoCrossover19,TrajetoCro19_C),
+nl,
+write(TrajetoCro19_C),
+nl,
+write(Nucleo_IndividuoCrossover19),
+concatena_diferenca_de_lista(TrajetoCro19_C,Nucleo_IndividuoCrossover19,TrajetoCro19/X19),
+nl,
+write(TrajetoCro19/X19),
+fitness(TrajetoCro19,FCro19),
+
+
+nl,
+write(20),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover20),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover20),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover20,Sufixo_Trajeto2_IndividuoCrossover20,TrajetoCro20_A),
+nl,
+write(TrajetoCro20_A),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover20),
+concatena_diferenca_de_lista(TrajetoCro20_A,Nucleo_Trajeto_IndividuoCrossover20,TrajetoCro20_B),
+nl,
+write(TrajetoCro20_B),
+nl,
+write(Nucleo_IndividuoCrossover20),
+concatena_diferenca_de_lista(TrajetoCro20_B,Nucleo_IndividuoCrossover20,TrajetoCro20_C),
+nl,
+write(TrajetoCro20_C),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover20),
+concatena_diferenca_de_lista(TrajetoCro20_C,Nucleo_Trajeto2_IndividuoCrossover20,TrajetoCro20/X20),
+nl,
+write(TrajetoCro20/X20),
+fitness(TrajetoCro20,FCro20),
+
+
+nl,
+write(21),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover21),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover21),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover21,Sufixo_Trajeto2_IndividuoCrossover21,TrajetoCro21_A),
+nl,
+write(TrajetoCro21_A),
+nl,
+write(Nucleo_IndividuoCrossover21),
+concatena_diferenca_de_lista(TrajetoCro21_A,Nucleo_IndividuoCrossover21,TrajetoCro21_B),
+nl,
+write(TrajetoCro21_B),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover21),
+concatena_diferenca_de_lista(TrajetoCro21_B,Nucleo_Trajeto2_IndividuoCrossover21,TrajetoCro21_C),
+nl,
+write(TrajetoCro21_C),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover21),
+concatena_diferenca_de_lista(TrajetoCro21_C,Nucleo_Trajeto_IndividuoCrossover21,TrajetoCro21/X21),
+nl,
+write(TrajetoCro21/X21),
+fitness(TrajetoCro21,FCro21),
+
+
+nl,
+write(22),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover22),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover22),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover22,Sufixo_Trajeto2_IndividuoCrossover22,TrajetoCro22_A),
+nl,
+write(TrajetoCro22_A),
+nl,
+write(Nucleo_IndividuoCrossover22),
+concatena_diferenca_de_lista(TrajetoCro22_A,Nucleo_IndividuoCrossover22,TrajetoCro22_B),
+nl,
+write(TrajetoCro22_B),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover22),
+concatena_diferenca_de_lista(TrajetoCro22_B,Nucleo_Trajeto_IndividuoCrossover22,TrajetoCro22_C),
+nl,
+write(TrajetoCro22_C),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover22),
+concatena_diferenca_de_lista(TrajetoCro22_C,Nucleo_Trajeto2_IndividuoCrossover22,TrajetoCro22/X22),
+nl,
+write(TrajetoCro22/X22),
+fitness(TrajetoCro22,FCro22),
+
+
+nl,
+write(23),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover23),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover23),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover23,Sufixo_Trajeto2_IndividuoCrossover23,TrajetoCro23_A),
+nl,
+write(TrajetoCro23_A),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover23),
+concatena_diferenca_de_lista(TrajetoCro23_A,Nucleo_Trajeto2_IndividuoCrossover23,TrajetoCro23_B),
+nl,
+write(TrajetoCro23_B),
+nl,
+write(Nucleo_IndividuoCrossover23),
+concatena_diferenca_de_lista(TrajetoCro23_B,Nucleo_IndividuoCrossover23,TrajetoCro23_C),
+nl,
+write(TrajetoCro23_C),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover23),
+concatena_diferenca_de_lista(TrajetoCro23_C,Nucleo_Trajeto_IndividuoCrossover23,TrajetoCro23/X23),
+nl,
+write(TrajetoCro23/X23),
+fitness(TrajetoCro23,FCro23),
+
+
+nl,
+write(24),
+nl,
+write(Prefixo_Trajeto_IndividuoCrossover24),
+nl,
+write(Sufixo_Trajeto2_IndividuoCrossover24),
+concatena_diferenca_de_lista(Prefixo_Trajeto_IndividuoCrossover24,Sufixo_Trajeto2_IndividuoCrossover24,TrajetoCro24_A),
+nl,
+write(TrajetoCro24_A),
+nl,
+write(Nucleo_Trajeto2_IndividuoCrossover24),
+concatena_diferenca_de_lista(TrajetoCro24_A,Nucleo_Trajeto2_IndividuoCrossover24,TrajetoCro24_B),
+nl,
+write(TrajetoCro24_B),
+nl,
+write(Nucleo_Trajeto_IndividuoCrossover24),
+concatena_diferenca_de_lista(TrajetoCro24_B,Nucleo_Trajeto_IndividuoCrossover24,TrajetoCro24_C),
+nl,
+write(TrajetoCro24_C),
+nl,
+write(Nucleo_IndividuoCrossover24),
+concatena_diferenca_de_lista(TrajetoCro24_C,Nucleo_IndividuoCrossover24,TrajetoCro24/X24),
+nl,
+write(TrajetoCro24/X24),
+fitness(TrajetoCro24,FCro24)*/
+
+
+
+
+
+
+
+	).
+	
+/* evolucao(+População,-PopulaçãoEvoluída)
+   Aplica os operadores genéticos para evoluir a populacao, onde:
+		+População -> População antes da evolução.
+		-PopulaçãoEvoluída -> População após a evolução.
+   Determinístico.
+ */
+evolucao(Populacao,PopulacaoEvoluida):-
+	nb_getval(tp,Tp),
+	nb_getval(tmi,Tmi),
+	length(Populacao,TamanhoPopulacao),
+	NumeroMigrantes is (round((Tp * Tmi))+(Tp-TamanhoPopulacao)),
+	gera_populacao(NumeroMigrantes,Migrantes),
+	append(Populacao,Migrantes,PopulacaoComMigrantes),
+	evo(PopulacaoComMigrantes,1,[],PopulacaoEvoluida).
+
+/* evo(+Populacao,+IndiceIndividuo,+PopulacaoInicial,-PopulacaoEvoluida)
+   Implementa evolucao/2, onde:
+		+População -> População antes da evolução.
+		+IndiceIndividuo -> Contador para percorrer todos os indivíduos.
+		+PopulacaoInicial -> Acumulador quer será preenchido até formar PopulacaoEvoluida.
+		-PopulaçãoEvoluída -> População após a evolução.
+   Determinístico.
+ */
+evo([],_,Populacao,PopulacaoEvoluida) :-	
+	!,
+	nb_getval(tp,Tp),
+	keysort(Populacao,PopulacaoOrdenada),
+	%habitat(PopulacaoOrdenada,PopulacaoPosHabitat),
+	%cortar_cauda(PopulacaoPosHabitat,Tp,PopulacaoEvoluida).
+	cortar_cauda(PopulacaoOrdenada,Tp,PopulacaoEvoluida).
+										
+evo([Individuo|Populacao],IndiceIndividuo,PopulacaoAtual,PopulacaoEvoluida) :-
+	mutacao(Individuo,IndividuoMutado),
+	%crossover(Individuo,IndividuoCrossover),
+	crossover(Individuo,IndividuoCrossover1,	IndividuoCrossover2,	IndividuoCrossover3,	IndividuoCrossover4,	IndividuoCrossover5,	IndividuoCrossover6,	IndividuoCrossover7,	IndividuoCrossover8,	IndividuoCrossover9,	IndividuoCrossover10,	IndividuoCrossover11,	IndividuoCrossover12,	IndividuoCrossover13,	IndividuoCrossover14,	IndividuoCrossover15,	IndividuoCrossover16,	IndividuoCrossover17,	IndividuoCrossover18,	IndividuoCrossover19,	IndividuoCrossover20,	IndividuoCrossover21,	IndividuoCrossover22,	IndividuoCrossover23,	IndividuoCrossover24),
+	IndiceIndividuoAtulizado is IndiceIndividuo + 1,
+	%evo(Populacao,IndiceIndividuoAtulizado,[Individuo,IndividuoMutado,IndividuoCrossover|PopulacaoAtual],PopulacaoEvoluida).
+	evo(Populacao,IndiceIndividuoAtulizado,[Individuo,IndividuoMutado,IndividuoCrossover1,	IndividuoCrossover2,	IndividuoCrossover3,	IndividuoCrossover4,	IndividuoCrossover5,	IndividuoCrossover6,	IndividuoCrossover7,	IndividuoCrossover8,	IndividuoCrossover9,	IndividuoCrossover10,	IndividuoCrossover11,	IndividuoCrossover12,	IndividuoCrossover13,	IndividuoCrossover14,	IndividuoCrossover15,	IndividuoCrossover16,	IndividuoCrossover17,	IndividuoCrossover18,	IndividuoCrossover19,	IndividuoCrossover20,	IndividuoCrossover21,	IndividuoCrossover22,	IndividuoCrossover23,	IndividuoCrossover24|PopulacaoAtual],PopulacaoEvoluida).
+
+/* evolucao(+População,-PopulaçãoEvoluída)
+   Aplica os operadores genéticos para evoluir a populacao, onde:
+		+População -> População antes da evolução.
+		-PopulaçãoEvoluída -> População após a evolução.
+   Determinístico.
+ */
+evolucao_paralelo(Populacao,PopulacaoEvoluida):-
+	nb_getval(tp,Tp),
+	nb_getval(tmi,Tmi),
+	length(Populacao,TamanhoPopulacao),
+	NumeroMigrantes is (round((Tp * Tmi))+(Tp-TamanhoPopulacao)),
+	gera_populacao(NumeroMigrantes,Migrantes),
+	append(Populacao,Migrantes,PopulacaoComMigrantes),
+	evo_paralelo(PopulacaoComMigrantes,1,[],PopulacaoEvoluida).
+
+/* evo(+Populacao,+IndiceIndividuo,+PopulacaoInicial,-PopulacaoEvoluida)
+   Implementa evolucao/2, onde:
+		+População -> População antes da evolução.
+		+IndiceIndividuo -> Contador para percorrer todos os indivíduos.
+		+PopulacaoInicial -> Acumulador quer será preenchido até formar PopulacaoEvoluida.
+		-PopulaçãoEvoluída -> População após a evolução.
+   Determinístico.
+ */
+evo_paralelo([],_,Populacao,PopulacaoEvoluida) :-	
+	!,
+	nb_getval(tp,Tp),
+	keysort(Populacao,PopulacaoOrdenada),
+	%habitat(PopulacaoOrdenada,PopulacaoPosHabitat),
+	%cortar_cauda(PopulacaoPosHabitat,Tp,PopulacaoEvoluida).
+	cortar_cauda(PopulacaoOrdenada,Tp,PopulacaoEvoluida).
+										
+evo_paralelo([Individuo|Populacao],IndiceIndividuo,PopulacaoAtual,PopulacaoEvoluida) :-
+	thread_create(mutacao(Individuo,IndividuoMutado),Id1,[]),
+	thread_create(crossover(Individuo,IndividuoCrossover1,	IndividuoCrossover2,	IndividuoCrossover3,	IndividuoCrossover4,	IndividuoCrossover5,	IndividuoCrossover6,	IndividuoCrossover7,	IndividuoCrossover8,	IndividuoCrossover9,	IndividuoCrossover10,	IndividuoCrossover11,	IndividuoCrossover12,	IndividuoCrossover13,	IndividuoCrossover14,	IndividuoCrossover15,	IndividuoCrossover16,	IndividuoCrossover17,	IndividuoCrossover18,	IndividuoCrossover19,	IndividuoCrossover20,	IndividuoCrossover21,	IndividuoCrossover22,	IndividuoCrossover23,	IndividuoCrossover24),Id2,[]),
+	thread_join(Id1,exited(IndividuoMutado)),
+    thread_join(Id2,exited(IndividuoCrossover1,	IndividuoCrossover2,	IndividuoCrossover3,	IndividuoCrossover4,	IndividuoCrossover5,	IndividuoCrossover6,	IndividuoCrossover7,	IndividuoCrossover8,	IndividuoCrossover9,	IndividuoCrossover10,	IndividuoCrossover11,	IndividuoCrossover12,	IndividuoCrossover13,	IndividuoCrossover14,	IndividuoCrossover15,	IndividuoCrossover16,	IndividuoCrossover17,	IndividuoCrossover18,	IndividuoCrossover19,	IndividuoCrossover20,	IndividuoCrossover21,	IndividuoCrossover22,	IndividuoCrossover23,	IndividuoCrossover24)),
+	IndiceIndividuoAtulizado is IndiceIndividuo + 1,
+	evo_paralelo(Populacao,IndiceIndividuoAtulizado,[Individuo,IndividuoMutado,IndividuoCrossover1,	IndividuoCrossover2,	IndividuoCrossover3,	IndividuoCrossover4,	IndividuoCrossover5,	IndividuoCrossover6,	IndividuoCrossover7,	IndividuoCrossover8,	IndividuoCrossover9,	IndividuoCrossover10,	IndividuoCrossover11,	IndividuoCrossover12,	IndividuoCrossover13,	IndividuoCrossover14,	IndividuoCrossover15,	IndividuoCrossover16,	IndividuoCrossover17,	IndividuoCrossover18,	IndividuoCrossover19,	IndividuoCrossover20,	IndividuoCrossover21,	IndividuoCrossover22,	IndividuoCrossover23,	IndividuoCrossover24|PopulacaoAtual],PopulacaoEvoluida).
+
+/* habitat(+População,-NovaPopulação)
+   Elimina indivíduos com parâmetros muito parecidos mantendo sempre o de menor fitness,onde:
+		+População -> População antes do habitat.
+		-PopulaçãoEvoluída -> População após o habitat.
+   Determinístico.
+ */
+habitat(Populacao,NovaPopulacao) :-
+	hab(Populacao,Cauda_Diferenca_De_Lista/Cauda_Diferenca_De_Lista,NovaPopulacao).
+
+/* hab(+Populacao,+PopulacaoInicial,-NovaPopulacao)
+   Implementa habitat/2, onde:
+		+População -> População antes do habitat.
+		+PopulacaoInicial -> Acumulador quer será preenchido até formar NovaPopulacao.
+		-NovaPopulacao -> População após o habitat.
+   Determinístico.
+ */
+hab([],Populacao_Pos_Habitat_Diferenca_De_Lista,Populacao_Pos_Habitat) :- 
+	!,
+	converte_diferenca_de_lista_lista(Populacao_Pos_Habitat_Diferenca_De_Lista,Populacao_Pos_Habitat).
+	
+hab([Individuo|RestantePopulacao],AcumuladorPopulacao/[Individuo|Cauda_Diferenca_De_Lista],NovaPopulacao) :-
+	torneio(Individuo,RestantePopulacao,Cauda_Diferenca_De_Lista3/Cauda_Diferenca_De_Lista3,PopulacaoPosHabitat),
+	hab(PopulacaoPosHabitat,AcumuladorPopulacao/Cauda_Diferenca_De_Lista,NovaPopulacao).
+
+/* torneio(+Indivíduo,+Populacao,+AcumuladorPopulacao,-NovaPopulacao)
+   Elimina todos os indivíduos que estão no mesmo habitat do primeiro indivíduo, onde:
+		+Indivíduo -> Indivíduo com menor fitness do habitat (macho alfa).
+		+População -> População antes do torneio.
+		+AcumuladorPopulacao -> Acumulador quer será preenchido até formar NovaPopulacao.
+		-NovaPopulacao -> População após o torneio.
+   Determinístico.
+ */	
+torneio(_,[],Nova_Populacao_Diferenca_De_Lista,Nova_Populacao) :- 
+	!,
+	converte_diferenca_de_lista_lista(Nova_Populacao_Diferenca_De_Lista,Nova_Populacao).
+
+torneio(F-Individuo,[F2-ProximoIndividuo|RestantePopulacao],AcumuladorPopulacao/Cauda_Diferenca_De_Lista,NovaPopulacao) :-
+	nb_getval(lde,Lde),
+	%numero_elementos_iguais(F-Individuo,F2-ProximoIndividuo,Numero_Elementos_Iguais),
+	Diferenca_Fitness is abs(F2-F),
+	(Diferenca_Fitness >= Lde ->
+		concatena_diferenca_de_lista(AcumuladorPopulacao/Cauda_Diferenca_De_Lista,[F2-ProximoIndividuo|Cauda_Diferenca_De_Lista2]/Cauda_Diferenca_De_Lista2,AcumuladorPopulacaoAtualizado)
+	 ;
+		AcumuladorPopulacaoAtualizado = AcumuladorPopulacao/Cauda_Diferenca_De_Lista),
+	torneio(F-Individuo,RestantePopulacao,AcumuladorPopulacaoAtualizado,NovaPopulacao).
+	
+fitness([Cidade_Inicial|Trajeto],Fitness) :-
+	fit(Cidade_Inicial,[Cidade_Inicial|Trajeto],0,Fitness).
+
+fit(Cidade_Inicial, [Cidade_Atual|Fim], Fitness_Parcial, Fitness) :-
+	var(Fim),
+	!,
+	funcao_cantor(Cidade_Atual,Cidade_Inicial,Funcao_Cantor),
+	distancia(Funcao_Cantor,Distancia),
+	Fitness is Fitness_Parcial + Distancia.
+	
+fit(Cidade_Inicial, [Cidade_Atual,Proxima_Cidade|Trajeto], Fitness_Parcial, Fitness) :-
+	!,
+	funcao_cantor(Cidade_Atual,Proxima_Cidade,Funcao_Cantor),
+	distancia(Funcao_Cantor,Distancia),
+	Fitness_Parcial_Atualizada is Fitness_Parcial + Distancia,
+	fit(Cidade_Inicial,[Proxima_Cidade|Trajeto],Fitness_Parcial_Atualizada,Fitness).
+	

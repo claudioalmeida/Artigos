@@ -1,0 +1,66 @@
+/*=======================================================================*/
+
+/* criar_lista_duplamente_encadeada(+Individuo) 
+ 
+*/
+
+% Lista de apenas um elemento								
+criar_lista_duplamente_encadeada(_-[Primeiro_Elemento]/_):-
+	!,
+	asserta(lista_duplamente_encadeada(Primeiro_Elemento,Primeiro_Elemento,Primeiro_Elemento)).
+
+% Lista de dois elementos
+criar_lista_duplamente_encadeada(_-[Primeiro_Elemento,Segundo_Elemento]/_):-
+	!,
+	asserta(lista_duplamente_encadeada(Primeiro_Elemento,Segundo_Elemento,Segundo_Elemento)),
+	assertz(lista_duplamente_encadeada(Segundo_Elemento,Primeiro_Elemento,Primeiro_Elemento)).	
+
+% Lista com mais de dois elementos	
+criar_lista_duplamente_encadeada(_-[Primeiro_Elemento,Segundo_Elemento|Restante_Trajeto]/_):-
+	criar_lista_duplamente_encadeada(Primeiro_Elemento,Segundo_Elemento,Primeiro_Elemento,[Segundo_Elemento|Restante_Trajeto]).	
+
+criar_lista_duplamente_encadeada(Primeiro_Elemento,Segundo_Elemento,Elemento_Anterior,[Ultimo_Elemento]) :- 
+	!,
+	asserta(lista_duplamente_encadeada(Primeiro_Elemento,Ultimo_Elemento,Segundo_Elemento)),
+	assertz(lista_duplamente_encadeada(Ultimo_Elemento,Elemento_Anterior,Primeiro_Elemento)).
+
+criar_lista_duplamente_encadeada(Primeiro_Elemento,Segundo_Elemento,Elemento_Anterior,[Elemento_Atual,Proximo_Elemento|Restante_Trajeto]) :- 
+	assertz(lista_duplamente_encadeada(Elemento_Atual,Elemento_Anterior,Proximo_Elemento)),
+	criar_lista_duplamente_encadeada(Primeiro_Elemento,Segundo_Elemento,Elemento_Atual,[Proximo_Elemento|Restante_Trajeto]).
+
+remover_elemento_lista_duplamente_encadeada(Elemento) :-
+	lista_duplamente_encadeada(Elemento,Anterior_Elemento,Proximo_Elemento),
+	(Elemento = Anterior_Elemento ->
+		retract(lista_duplamente_encadeada(Elemento,Elemento,Elemento))
+	 ;
+		(Anterior_Elemento = Proximo_Elemento ->
+				retract(lista_duplamente_encadeada(Elemento,Anterior_Elemento,Anterior_Elemento)),
+				retract(lista_duplamente_encadeada(Anterior_Elemento,Elemento,Elemento)),
+				asserta(lista_duplamente_encadeada(Anterior_Elemento,Anterior_Elemento,Anterior_Elemento))
+				
+		 ;
+			retract(lista_duplamente_encadeada(Elemento,Anterior_Elemento,Proximo_Elemento)),
+			retract(lista_duplamente_encadeada(Anterior_Elemento,Anterior_Anterior_Elemento,Elemento)),
+			retract(lista_duplamente_encadeada(Proximo_Elemento,Elemento,Proximo_Proximo_Elemento)),
+			assertz(lista_duplamente_encadeada(Anterior_Elemento,Anterior_Anterior_Elemento,Proximo_Elemento)),
+			assertz(lista_duplamente_encadeada(Proximo_Elemento,Anterior_Elemento,Proximo_Proximo_Elemento))
+		)
+	).
+
+anterior_proximo_elementos_lista_duplamente_encadeada(Elemento,Anterior_Elemento,Proximo_Elemento) :-
+	lista_duplamente_encadeada(Elemento,Anterior_Elemento,Proximo_Elemento),
+	remover_elemento_lista_duplamente_encadeada(Elemento).
+	
+remover_lista_duplamente_encadeada :-
+	retractall(lista_duplamente_encadeada(_,_,_)).
+	
+teste(X) :- criar_lista_duplamente_encadeada(_-X/_).
+
+teste2(X) :- remover_elemento_lista_duplamente_encadeada(X).
+
+teste3 :- remover_lista_duplamente_encadeada.
+
+teste4(X,A,P) :- anterior_proximo_elementos_lista_duplamente_encadeada(X,A,P).
+
+
+
