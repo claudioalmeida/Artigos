@@ -1,3 +1,12 @@
+% Arquivo contendo todas as distâncias entre as cidades do problema do caixeiro viajante para 130 cidades.
+
+/* distancia(?Funcao_de_Paridade_de_Cantor, ?Distancia)
+   Retorna a distância saindo da cidade A e indo para a cidade B cujo valor da funçao de paridade de Cantor Z(A,B) é dado por Funcao_de_Paridade_de_Cantor, onde:
+		?Funcao_de_Paridade_de_Cantor -> Valor da função de paridade de Cantor para (A,B).
+		?Distancia -> Distância entre as cidades A e B.
+   Determinístico.
+*/
+
 distancia(4,0) :- !.
 distancia(12,0) :- !.
 distancia(24,0) :- !.
